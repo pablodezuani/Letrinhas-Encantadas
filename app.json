@@ -1,0 +1,43 @@
+{
+  "expo": {
+    "name": "Letrinhas Encantadas",
+    "slug": "letrinhas-encantadas",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/letrinhas.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "edgeToEdgeEnabled": true,
+      "permissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.MODIFY_AUDIO_SETTINGS"
+      ],
+      "package": "com.pdezuani.letrinhasencantadas"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-audio",
+      "expo-video"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "20e0865d-814b-4f0e-8a5e-75b65b81cd2d"
+      }
+    }
+  }
+}
