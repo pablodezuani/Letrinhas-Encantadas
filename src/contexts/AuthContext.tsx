@@ -65,7 +65,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
           token: hasUser.token
         });
       } else {
-        // Caso não tenha token válido, não seta nenhum usuário
+        
         setUser({
           id: '',
           name: '',

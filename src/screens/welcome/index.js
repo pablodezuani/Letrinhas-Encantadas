@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginTop: 28,
     marginBottom: 12,
-    color: '#ffe8d3', // Texto escuro para contraste
+    color: '#305F72 ', // Texto escuro para contraste
   },
   text: {
     color: '#ffe8d3', // Texto escuro para contraste

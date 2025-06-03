@@ -110,7 +110,7 @@ const CadastroScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#091440',
+    backgroundColor: '#ffefe7 ',
   },
   containerHeader: {
     marginTop: '14%',
@@ -120,10 +120,10 @@ const styles = StyleSheet.create({
   message: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#fff',
+    color: '#00000',
   },
   containerform: {
-    backgroundColor: '#1A2B5C',
+    backgroundColor: '#305F72',
     flex: 1,
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
@@ -155,7 +155,7 @@ const styles = StyleSheet.create({
     color: 'white',
   },
   button: {
-    backgroundColor: '#f63700',
+    backgroundColor: '#CBAACB',
     width: '80%',
     borderRadius: 18,
     paddingVertical: 8,

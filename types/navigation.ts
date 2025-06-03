@@ -5,4 +5,6 @@ export type RootStackParamList = {
   PhraseBuilder: { gender: 'menino' | 'menina' };
   VowelsGame: { gender: 'menino' | 'menina' };
     WordFormationGame: { gender: 'menino' | 'menina' };
+    AddChildScreen: undefined;
 };
+

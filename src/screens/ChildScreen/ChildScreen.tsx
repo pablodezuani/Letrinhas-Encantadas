@@ -14,7 +14,7 @@ import { RootStackParamList } from "../../../types/navigation";
 
 
 type Props = NativeStackScreenProps<RootStackParamList, "Home">;
-const HomeScreen: React.FC<Props> = ({ navigation, route }) => {
+const ChildScreen: React.FC<Props> = ({ navigation, route }) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const moveAnim = useRef(new Animated.Value(50)).current;
 
@@ -227,4 +227,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default HomeScreen;
+export default ChildScreen ;

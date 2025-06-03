@@ -130,7 +130,7 @@ export default function Login() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#091440',
+    backgroundColor: '#ffefe7',
   },
   containerHeader: {
     marginTop: '14%',
@@ -140,13 +140,13 @@ const styles = StyleSheet.create({
   message: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#ffe8d3',
+    color: '#6B2737',
   },
   textReset: {
     color: '#ffe8d3',
   },
   containerForm: {
-    backgroundColor: '#1A2B5C',
+    backgroundColor: '#305F72',
     flex: 1,
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
@@ -168,7 +168,7 @@ const styles = StyleSheet.create({
     color:'#FFFFFF'
   },
   button: {
-    backgroundColor: '#F63700',
+    backgroundColor: '#CBAACB',
     width: '100%',
     borderRadius: 18,
     paddingVertical: 8,
