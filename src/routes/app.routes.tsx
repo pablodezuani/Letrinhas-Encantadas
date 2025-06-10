@@ -18,11 +18,11 @@ const Stack = createNativeStackNavigator();
 return(
 <Stack.Navigator>
    
-    <Stack.Screen
-    name="HomeScreen"
-    component={HomeScreen}
-    options={{headerShown: false}}
-    />
+<Stack.Screen
+  name="HomeScreen"
+  component={HomeScreen}  
+  options={{ headerShown: false }}
+/>
    < Stack.Screen
     name="ChoiceScreen"
     component={ChoiceScreen}
