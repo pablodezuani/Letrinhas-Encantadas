@@ -28,6 +28,7 @@
     "expo-speech": "~13.1.7",
     "expo-status-bar": "~2.2.3",
     "expo-video": "~2.1.9",
+    "lucide-react": "^0.522.0",
     "moti": "^0.30.0",
     "react": "19.0.0",
     "react-native": "0.79.2",

@@ -323,7 +323,7 @@ export default function PremiumAddChildScreen() {
         </View>
       </View>
 
-      {/* Seção TEA - Elegante */}
+
       <View style={styles.teaSection}>
         <Text style={styles.sectionTitle}>Diagnóstico TEA</Text>
         

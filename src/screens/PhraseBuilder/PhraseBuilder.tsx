@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   View,
   Text,
@@ -8,248 +8,215 @@ import {
   Image,
   SafeAreaView,
   Dimensions,
+  Animated,
+  StatusBar,
+  Platform,
 } from "react-native";
 import * as Speech from "expo-speech";
+import { LinearGradient } from "expo-linear-gradient";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 
 const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 const numbers = Array.from({ length: 10 }, (_, i) => i.toString());
 
 const categories = {
-  Básicos: [
-    { word: "Eu", image: null },
-    { word: "Quero", image: null },
-    { word: "Sim", image: null },
-    { word: "Não", image: null },
-  ],
-  Acoes: [
-    { word: "Comer", image: require("../../../assets/words/comer.png") },
-    { word: "Beber", image: require("../../../assets/words/beber.png") },
-    { word: "Dormir", image: require("../../../assets/words/dormir.png") },
-    { word: "Brincar", image: require("../../../assets/words/brincar.png") },
-    { word: "Correr", image: require("../../../assets/words/correr.png") },
-    { word: "Pular", image: require("../../../assets/words/pular.png") },
-    { word: "Andar", image: require("../../../assets/words/andar.png") },
-    { word: "Cantar", image: require("../../../assets/words/cantar.png") },
-    { word: "Desenhar", image: require("../../../assets/words/desenhar.png") },
-    { word: "Abraçar", image: require("../../../assets/words/abracar.png") },
-    { word: "Chorar", image: require("../../../assets/words/chorar.png") },
-    { word: "Sorrir", image: require("../../../assets/words/sorrir.png") },
-    { word: "Sentar", image: require("../../../assets/words/sentar.png") },
-    { word: "Levantar", image: require("../../../assets/words/levantar.png") },
-    { word: "Tomar banho", image: require("../../../assets/words/banho.png") },
-  ],
-  Sentimentos: [
-    { word: "Feliz", image: require("../../../assets/words/feliz.png") },
-    { word: "Triste", image: require("../../../assets/words/triste.png") },
-    { word: "Bravo", image: require("../../../assets/words/bravo.png") },
-    { word: "Com Medo", image: require("../../../assets/words/medo.png") },
-    { word: "Cansado", image: require("../../../assets/words/cansado.png") },
-    { word: "Animado", image: require("../../../assets/words/animado.png") },
-    // { word: "Assustado", image: require("../../../assets/words/assustado.png") },
-    // {
-    //   word: "Envergonhado",
-    //   image: require("../../../assets/words/envergonhado.png"),
-    // },
-
-    // { word: "Confuso", image: require("../../../assets/words/confuso.png") },
-    // { word: "Solitário", image: require("../../../assets/words/solitario.png") },
-    // { word: "Orgulhoso", image: require("../../../assets/words/orgulhoso.png") },
-  ],
-  // imagem ja pegas
-  // Familia: [
-  //   { word: "Mamãe", image: require("../../../assets/words/mamae.png") },
-  //   { word: "Papai", image: require("../../../assets/words/papai.png") },
-  //   { word: "Irmão", image: require("../../../assets/words/irmao.png") },
-  //   { word: "Irmã", image: require("../../../assets/words/irma.png") },
-  //   { word: "Vovó", image: require("../../../assets/words/vovo.png") },
-  //   { word: "Vovô", image: require("../../../assets/words/vovo.png") },
-  // ],
-
-  Higiene: [
-    { word: "Escova de Dente", image: require("../../../assets/words/escova.png") },
-    { word: "Pasta de Dente", image: require("../../../assets/words/pasta.png") },
-    { word: "Sabonete", image: require("../../../assets/words/sabonete.png") },
-    { word: "Shampoo", image: require("../../../assets/words/shampoo.png") },
-    { word: "Toalha", image: require("../../../assets/words/toalha.png") },
-    { word: "Pente", image: require("../../../assets/words/escova.png") },
-    {
-      word: "Papel Higiênico",
-      image: require("../../../assets/words/higienico.png"),
-    },
-    { word: "Banho", image: require("../../../assets/words/banho.png") },
-    { word: "Vaso Sanitário", image: require("../../../assets/words/vaso.png") },
-    { word: "Lenço", image: require("../../../assets/words/lenco.png") },
-  ],
-  TempoClima: [
-    { word: "Sol", image: require("../../../assets/words/sol.png") },
-    { word: "Chuva", image: require("../../../assets/words/chuva.png") },
-    { word: "Frio", image: require("../../../assets/words/frio.png") },
-    // { word: "Calor", image: require("../../../assets/words/calor.png") },
-    // { word: "Vento", image: require("../../../assets/words/vento.png") },
-    // { word: "Arco-íris", image: require("../../../assets/words/arco_iris.png") },
-  ],
-
-  // Comidas: [
-  //   { word: "Arroz", image: require("../../../assets/words/arroz.png") },
-  //   { word: "Feijão", image: require("../../../assets/words/feijao.png") },
-  //   { word: "Pão", image: require("../../../assets/words/pao.png") },
-  //   { word: "Leite", image: require("../../../assets/words/leite.png") },
-  //   { word: "Suco", image: require("../../../assets/words/suco.png") },
-  //   { word: "Biscoito", image: require("../../../assets/words/biscoito.png") },
-  // ],
-
-  // Dores: [
-  //   { word: "Dor de Cabeça", image: require("../../../assets/words/dor_cabeca.png") },
-  //   {
-  //     word: "Dor de Barriga",
-  //     image: require("../../../assets/words/dor_barriga.png"),
-  //   },
-  //   { word: "Dor de Dente", image: require("../../../assets/words/dente.png") },
-  //   { word: "Dor no Braço", image: require("../../../assets/words/braco.png") },
-  //   { word: "Dor na Perna", image: require("../../../assets/words/perna.png") },
-  //   { word: "Dor no Pé", image: require("../../../assets/words/pe.png") },
-  //   { word: "Dor no Ouvido", image: require("../../../assets/words/ouvido.png") },
-  //   {
-  //     word: "Dor nas Costas",
-  //     image: require("../../../assets/words/dor_costas.png"),
-  //   },
-  //   {
-  //     word: "Corte/Machucado",
-  //     image: require("../../../assets/words/machucado.png"),
-  //   },
-  //   { word: "Febre", image: require("../../../assets/words/febre.png") },
-  //   { word: "Tosse", image: require("../../../assets/words/tosse.png") },
-  //   { word: "Enjoado", image: require("../../../assets/words/enjoado.png") },
-  //   { word: "Coceira", image: require("../../../assets/words/coceira.png") },
-  //   {
-  //     word: "Picada de Inseto",
-  //     image: require("../../../assets/words/picada_inseto.png"),
-  //   },
-  // ],
-
-  // Frutas: [
-  //   { word: "Maçã", image: require("../../../assets/words/maca.png") },
-  //   { word: "Uva", image: require("../../../assets/words/uva.png") },
-  //   { word: "Banana", image: require("../../../assets/words/banana.png") },
-  //   { word: "Morango", image: require("../../../assets/words/morango.png") },
-  //   { word: "Melancia", image: require("../../../assets/words/melancia.png") },
-  //   { word: "Abacaxi", image: require("../../../assets/words/abacaxi.png") },
-  //   { word: "Laranja", image: require("../../../assets/words/laranja.png") },
-  //   { word: "Pera", image: require("../../../assets/words/pera.png") },
-  //   { word: "Manga", image: require("../../../assets/words/manga.png") },
-  // ],
-
-  // Cores: [
-  //   { word: "Vermelho", image: require("../../../assets/words/vermelho.png") },
-  //   { word: "Azul", image: require("../../../assets/words/azul.png") },
-  //   { word: "Amarelo", image: require("../../../assets/words/amarelo.png") },
-  //   { word: "Verde", image: require("../../../assets/words/verde.png") },
-  //   { word: "Roxo", image: require("../../../assets/words/roxo.png") },
-  //   { word: "Laranja", image: require("../../../assets/words/laranja.png") },
-  //   { word: "Rosa", image: require("../../../assets/words/rosa.png") },
-  //   { word: "Marrom", image: require("../../../assets/words/marrom.png") },
-  //   { word: "Cinza", image: require("../../../assets/words/cinza.png") },
-  //   { word: "Preto", image: require("../../../assets/words/preto.png") },
-  //   { word: "Branco", image: require("../../../assets/words/branco.png") },
-  //   { word: "Bege", image: require("../../../assets/words/bege.png") },
-  //   { word: "Dourado", image: require("../../../assets/words/dourado.png") },
-  //   { word: "Prateado", image: require("../../../assets/words/prateado.png") },
-  // ],
-
-  // Animais: [
-  //   { word: "Cachorro", image: require("../../../assets/words/cachorro.png") },
-  //   { word: "Gato", image: require("../../../assets/words/gato.png") },
-  //   { word: "Pássaro", image: require("../../../assets/words/passaro.png") },
-  //   { word: "Pato", image: require("../../../assets/words/pato.png") },
-  //   { word: "Cavalo", image: require("../../../assets/words/cavalo.png") },
-  //   { word: "Vaca", image: require("../../../assets/words/vaca.png") },
-  //   { word: "Porco", image: require("../../../assets/words/porco.png") },
-  //   { word: "Galinha", image: require("../../../assets/words/galinha.png") },
-  //   { word: "Leão", image: require("../../../assets/words/leao.png") },
-  //   { word: "Elefante", image: require("../../../assets/words/elefante.png") },
-  //   { word: "Macaco", image: require("../../../assets/words/macaco.png") },
-  //   { word: "Girafa", image: require("../../../assets/words/girafa.png") },
-  //   { word: "Peixe", image: require("../../../assets/words/peixe.png") },
-  //   { word: "Coelho", image: require("../../../assets/words/coelho.png") },
-  //   { word: "Urso", image: require("../../../assets/words/urso.png") },
-  //   { word: "Jacaré", image: require("../../../assets/words/jacare.png") },
-  //   { word: "Tigre", image: require("../../../assets/words/tigre.png") },
-  //   { word: "Zebra", image: require("../../../assets/words/zebra.png") },
-  //   { word: "Tartaruga", image: require("../../../assets/words/tartaruga.png") },
-  //   { word: "Cobra", image: require("../../../assets/words/cobra.png") },
-  // ],
-
-  // Roupas: [
-  //   { word: "Camiseta", image: require("../../../assets/words/camiseta.png") },
-  //   { word: "Calça", image: require("../../../assets/words/calca.png") },
-  //   { word: "Vestido", image: require("../../../assets/words/vestido.png") },
-  //   { word: "Saia", image: require("../../../assets/words/saia.png") },
-  //   { word: "Shorts", image: require("../../../assets/words/shorts.png") },
-  //   { word: "Tênis", image: require("../../../assets/words/tenis.png") },
-  //   { word: "Chinelo", image: require("../../../assets/words/chinelo.png") },
-  //   { word: "Sandália", image: require("../../../assets/words/sandalia.png") },
-  //   { word: "Boné", image: require("../../../assets/words/bone.png") },
-  //   { word: "Casaco", image: require("../../../assets/words/casaco.png") },
-  //   { word: "Meias", image: require("../../../assets/words/meias.png") },
-  //   { word: "Pijama", image: require("../../../assets/words/pijama.png") },
-  // ],
-  // Lugares: [
-  //   { word: "Escola", image: require("../../../assets/words/escola.png") },
-  //   { word: "Parque", image: require("../../../assets/words/parque.png") },
-  //   { word: "Praia", image: require("../../../assets/words/praia.png") },
-  //   { word: "Casa", image: require("../../../assets/words/casa.png") },
-  //   { word: "Cozinha", image: require("../../../assets/words/cozinha.png") },
-  //   { word: "Banheiro", image: require("../../../assets/words/banheiro.png") },
-  //   { word: "Quarto", image: require("../../../assets/words/quarto.png") },
-  //   { word: "Sala", image: require("../../../assets/words/sala.png") },
-  //   {
-  //     word: "Supermercado",
-  //     image: require("../../../assets/words/supermercado.png"),
-  //   },
-  //   { word: "Hospital", image: require("../../../assets/words/hospital.png") },
-  //   { word: "Igreja", image: require("../../../assets/words/igreja.png") },
-  //   { word: "Zoológico", image: require("../../../assets/words/zoologico.png") },
-  // ],
-  // Brinquedos: [
-  //   { word: "Bola", image: require("../../../assets/words/bola.png") },
-  //   { word: "Boneca", image: require("../../../assets/words/boneca.png") },
-  //   { word: "Carrinho", image: require("../../../assets/words/carrinho.png") },
-  //   {
-  //     word: "Quebra-cabeça",
-  //     image: require("../../../assets/words/quebra_cabeca.png"),
-  //   },
-  //   { word: "Blocos", image: require("../../../assets/words/blocos.png") },
-  //   { word: "Pelúcia", image: require("../../../assets/words/pelucia.png") },
-  //   { word: "Patinete", image: require("../../../assets/words/patinete.png") },
-  //   { word: "Bicicleta", image: require("../../../assets/words/bicicleta.png") },
-  //   { word: "Lego", image: require("../../../assets/words/lego.png") },
-  //   { word: "Massinha", image: require("../../../assets/words/massinha.png") },
-  //   { word: "Ioiô", image: require("../../../assets/words/ioio.png") },
-  //   { word: "Pião", image: require("../../../assets/words/piao.png") },
-  // ],
-
-  Alfabeto: alphabet.map((l) => ({ word: l, image: null })),
-  Números: numbers.map((n) => ({ word: n, image: null })),
+  Básicos: {
+    icon: "hand-heart",
+    emoji: "👋",
+    color: ["#FF6B9D", "#FF8E9B"],
+    words: [
+      { word: "Eu", image: null },
+      { word: "Quero", image: null },
+      { word: "Sim", image: null },
+      { word: "Não", image: null },
+    ]
+  },
+  Ações: {
+    icon: "run",
+    emoji: "🏃",
+    color: ["#4ECDC4", "#44A08D"],
+    words: [
+      { word: "Comer", image: require("../../../assets/words/comer.png") },
+      { word: "Beber", image: require("../../../assets/words/beber.png") },
+      { word: "Dormir", image: require("../../../assets/words/dormir.png") },
+      { word: "Brincar", image: require("../../../assets/words/brincar.png") },
+      { word: "Correr", image: require("../../../assets/words/correr.png") },
+      { word: "Pular", image: require("../../../assets/words/pular.png") },
+      { word: "Andar", image: require("../../../assets/words/andar.png") },
+      { word: "Cantar", image: require("../../../assets/words/cantar.png") },
+      { word: "Desenhar", image: require("../../../assets/words/desenhar.png") },
+      { word: "Abraçar", image: require("../../../assets/words/abracar.png") },
+      { word: "Chorar", image: require("../../../assets/words/chorar.png") },
+      { word: "Sorrir", image: require("../../../assets/words/sorrir.png") },
+      { word: "Sentar", image: require("../../../assets/words/sentar.png") },
+      { word: "Levantar", image: require("../../../assets/words/levantar.png") },
+      { word: "Tomar banho", image: require("../../../assets/words/banho.png") },
+    ]
+  },
+  Sentimentos: {
+    icon: "emoticon-happy",
+    emoji: "😊",
+    color: ["#A8E6CF", "#7FCDCD"],
+    words: [
+      { word: "Feliz", image: require("../../../assets/words/feliz.png") },
+      { word: "Triste", image: require("../../../assets/words/triste.png") },
+      { word: "Bravo", image: require("../../../assets/words/bravo.png") },
+      { word: "Com Medo", image: require("../../../assets/words/medo.png") },
+      { word: "Cansado", image: require("../../../assets/words/cansado.png") },
+      { word: "Animado", image: require("../../../assets/words/animado.png") },
+    ]
+  },
+  Higiene: {
+    icon: "shower",
+    emoji: "🧼",
+    color: ["#FFD93D", "#6BCF7F"],
+    words: [
+      { word: "Escova de Dente", image: require("../../../assets/words/escova.png") },
+      { word: "Pasta de Dente", image: require("../../../assets/words/pasta.png") },
+      { word: "Sabonete", image: require("../../../assets/words/sabonete.png") },
+      { word: "Shampoo", image: require("../../../assets/words/shampoo.png") },
+      { word: "Toalha", image: require("../../../assets/words/toalha.png") },
+      { word: "Pente", image: require("../../../assets/words/escova.png") },
+      { word: "Papel Higiênico", image: require("../../../assets/words/higienico.png") },
+      { word: "Banho", image: require("../../../assets/words/banho.png") },
+      { word: "Vaso Sanitário", image: require("../../../assets/words/vaso.png") },
+      { word: "Lenço", image: require("../../../assets/words/lenco.png") },
+    ]
+  },
+  TempoClima: {
+    icon: "weather-sunny",
+    emoji: "☀️",
+    color: ["#74B9FF", "#0984E3"],
+    words: [
+      { word: "Sol", image: require("../../../assets/words/sol.png") },
+      { word: "Chuva", image: require("../../../assets/words/chuva.png") },
+      { word: "Frio", image: require("../../../assets/words/frio.png") },
+    ]
+  },
+  Alfabeto: {
+    icon: "alphabetical",
+    emoji: "🔤",
+    color: ["#FD79A8", "#E84393"],
+    words: alphabet.map((l) => ({ word: l, image: null }))
+  },
+  Números: {
+    icon: "numeric",
+    emoji: "🔢",
+    color: ["#FDCB6E", "#E17055"],
+    words: numbers.map((n) => ({ word: n, image: null }))
+  },
 };
 
 export default function PhraseBuilder({ route, navigation }) {
-  const [selectedCategory, setSelectedCategory] =
-    useState<keyof typeof categories>("Básicos");
+  const [selectedCategory, setSelectedCategory] = useState<keyof typeof categories>("Básicos");
   const [phrase, setPhrase] = useState<string[]>([]);
+  const [animatingWord, setAnimatingWord] = useState<string | null>(null);
   const { gender } = route.params;
 
+  // Animações
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const slideAnim = useRef(new Animated.Value(30)).current;
+  const phraseAnim = useRef(new Animated.Value(0)).current;
+  const bounceAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    // Animação inicial
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 800,
+        useNativeDriver: true,
+      }),
+      Animated.spring(slideAnim, {
+        toValue: 0,
+        tension: 50,
+        friction: 8,
+        useNativeDriver: true,
+      }),
+    ]).start();
+
+    // Animação contínua de bounce
+    const bounceAnimation = Animated.loop(
+      Animated.sequence([
+        Animated.timing(bounceAnim, {
+          toValue: 1,
+          duration: 2000,
+          useNativeDriver: true,
+        }),
+        Animated.timing(bounceAnim, {
+          toValue: 0,
+          duration: 2000,
+          useNativeDriver: true,
+        }),
+      ])
+    );
+    bounceAnimation.start();
+
+    return () => bounceAnimation.stop();
+  }, []);
+
+  useEffect(() => {
+    // Animar quando a frase muda
+    if (phrase.length > 0) {
+      Animated.spring(phraseAnim, {
+        toValue: 1,
+        tension: 50,
+        friction: 8,
+        useNativeDriver: true,
+      }).start();
+    } else {
+      phraseAnim.setValue(0);
+    }
+  }, [phrase]);
+
+  // Temas aprimorados
+  const theme = {
+    menino: {
+      primary: '#4D9DE0',
+      secondary: '#A5D8FF',
+      background: ['#E3F2FD', '#BBDEFB', '#90CAF9'],
+      accent: '#2196F3',
+      textColor: '#1565C0',
+      cardBg: 'rgba(255,255,255,0.95)',
+      shadowColor: '#2196F3',
+    },
+    menina: {
+      primary: '#E07A9E',
+      secondary: '#F9C8D9',
+      background: ['#FCE4EC', '#F8BBD9', '#F48FB1'],
+      accent: '#E91E63',
+      textColor: '#AD1457',
+      cardBg: 'rgba(255,255,255,0.95)',
+      shadowColor: '#E91E63',
+    }
+  };
+
+  const currentTheme = theme[gender] || theme.menino;
+
   const speakWord = (word: string) => {
-    Speech.speak(word, { language: "pt-BR" });
+    Speech.speak(word, { 
+      language: "pt-BR",
+      rate: 1.0,
+      pitch: 1.1,
+    });
   };
 
   const handleWordPress = (word: string) => {
+    setAnimatingWord(word);
     speakWord(word);
     setPhrase((prev) => [...prev, word]);
+    
+    // Reset animação após um tempo
+    setTimeout(() => setAnimatingWord(null), 500);
   };
 
   const handleSpeakPhrase = () => {
     if (phrase.length > 0) {
-      Speech.speak(phrase.join(" "), { language: "pt-BR" });
+      Speech.speak(phrase.join(" "), { 
+        language: "pt-BR",
+        rate: 0.9,
+        pitch: 1.0,
+      });
     }
   };
 
@@ -257,219 +224,562 @@ export default function PhraseBuilder({ route, navigation }) {
     setPhrase((prev) => prev.slice(0, prev.length - 1));
   };
 
-  const backgroundColor = gender === "menino" ? "#A1C6F1" : "#F7B7C5";
+  const handleClearAll = () => {
+    setPhrase([]);
+  };
 
-  return (
-    <SafeAreaView style={[styles.container, { backgroundColor }]}>
-      <Text style={styles.title}>Monte sua frase 💬</Text>
-
-      <View style={styles.categoryWrapper}>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.categoryScroll}
+  const renderWordCard = ({ word, image }) => (
+    <Animated.View
+      key={word}
+      style={[
+        styles.wordCardWrapper,
+        {
+          transform: [
+            {
+              scale: animatingWord === word ? 1.1 : 1,
+            },
+          ],
+        },
+      ]}
+    >
+      <TouchableOpacity
+        style={[
+          styles.wordCard,
+          { 
+            backgroundColor: currentTheme.cardBg,
+            shadowColor: currentTheme.shadowColor,
+          }
+        ]}
+        onPress={() => handleWordPress(word)}
+        activeOpacity={0.8}
+      >
+        <LinearGradient
+          colors={['rgba(255,255,255,0.1)', 'rgba(255,255,255,0.05)']}
+          style={styles.wordCardGradient}
         >
-          {Object.keys(categories).map((cat) => (
-            <TouchableOpacity
-              key={cat}
-              style={[
-                styles.categoryButton,
-                selectedCategory === cat && styles.activeCategory,
-              ]}
-              onPress={() =>
-                setSelectedCategory(cat as keyof typeof categories)
-              }
-            >
-              <Text
-                style={[
-                  styles.categoryText,
-                  selectedCategory === cat && styles.activeCategoryText,
-                ]}
-              >
-                {cat}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-      </View>
-
-      <ScrollView contentContainerStyle={styles.wordsContainer}>
-        {categories[selectedCategory].map(({ word, image }) => (
-          <TouchableOpacity
-            key={word}
-            style={styles.wordButton}
-            onPress={() => handleWordPress(word)}
-          >
+          <View style={styles.wordImageContainer}>
             {image ? (
               <Image source={image} style={styles.wordImage} />
             ) : (
-              <View style={styles.emptyImage} />
+              <View style={[styles.emptyImage, { backgroundColor: currentTheme.secondary }]}>
+                <Text style={[styles.emptyImageText, { color: currentTheme.textColor }]}>
+                  {word}
+                </Text>
+              </View>
             )}
-            <Text style={styles.wordText}>{word}</Text>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
+          </View>
+          <Text style={[styles.wordText, { color: currentTheme.textColor }]}>
+            {word}
+          </Text>
+        </LinearGradient>
+      </TouchableOpacity>
+    </Animated.View>
+  );
 
-  
-      <View style={styles.phraseContainer}>
-        <Text style={styles.phraseLabel}>Frase:</Text>
-        <Text style={styles.phraseText}>{phrase.join(" ") || "---"}</Text>
-      </View>
+  const renderCategoryButton = (categoryKey: string) => {
+    const category = categories[categoryKey];
+    const isActive = selectedCategory === categoryKey;
+    
+    return (
+      <TouchableOpacity
+        key={categoryKey}
+        style={styles.categoryButtonWrapper}
+        onPress={() => setSelectedCategory(categoryKey as keyof typeof categories)}
+        activeOpacity={0.8}
+      >
+        <LinearGradient
+          colors={isActive ? category.color : ['rgba(255,255,255,0.9)', 'rgba(255,255,255,0.7)']}
+          style={[
+            styles.categoryButton,
+            isActive && styles.activeCategoryButton,
+          ]}
+        >
+          <Text style={styles.categoryEmoji}>{category.emoji}</Text>
+          <MaterialCommunityIcons 
+            name={category.icon as any} 
+            size={16} 
+            color={isActive ? '#fff' : currentTheme.textColor} 
+          />
+          <Text
+            style={[
+              styles.categoryText,
+              { color: isActive ? '#fff' : currentTheme.textColor },
+              isActive && styles.activeCategoryText,
+            ]}
+          >
+            {categoryKey}
+          </Text>
+        </LinearGradient>
+      </TouchableOpacity>
+    );
+  };
 
+  return (
+    <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="dark-content" backgroundColor="transparent" translucent />
+      
+      {/* Background Gradient */}
+      <LinearGradient
+        colors={currentTheme.background}
+        style={styles.backgroundGradient}
+      />
 
-      <View style={styles.actionContainer}>
-        <TouchableOpacity style={styles.playButton} onPress={handleSpeakPhrase}>
-          <Text style={styles.playButtonText}>🔊 Falar</Text>
+      {/* Header */}
+      <Animated.View 
+        style={[
+          styles.header,
+          {
+            opacity: fadeAnim,
+            transform: [{ translateY: slideAnim }]
+          }
+        ]}
+      >
+        <TouchableOpacity 
+          onPress={() => navigation.goBack()} 
+          style={[styles.backButton, { shadowColor: currentTheme.shadowColor }]}
+        >
+          <Ionicons name="arrow-back" size={24} color={currentTheme.textColor} />
+        </TouchableOpacity>
+        
+        <View style={styles.headerContent}>
+          <Animated.Text 
+            style={[
+              styles.title, 
+              { 
+                color: currentTheme.textColor,
+                transform: [
+                  {
+                    translateY: bounceAnim.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [0, -5],
+                    }),
+                  },
+                ],
+              }
+            ]}
+          >
+            💬 Monte sua frase
+          </Animated.Text>
+          <Text style={[styles.subtitle, { color: currentTheme.textColor }]}>
+            Toque nas palavras para criar frases incríveis!
+          </Text>
+        </View>
+      </Animated.View>
+
+      {/* Categories */}
+      <Animated.View 
+        style={[
+          styles.categoriesContainer,
+          {
+            opacity: fadeAnim,
+            transform: [{ translateY: slideAnim }]
+          }
+        ]}
+      >
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.categoriesScroll}
+        >
+          {Object.keys(categories).map(renderCategoryButton)}
+        </ScrollView>
+      </Animated.View>
+
+      {/* Words Grid */}
+      <Animated.View 
+        style={[
+          styles.wordsSection,
+          {
+            opacity: fadeAnim,
+          }
+        ]}
+      >
+        <ScrollView 
+          contentContainerStyle={styles.wordsContainer}
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={styles.wordsGrid}>
+            {categories[selectedCategory].words.map(renderWordCard)}
+          </View>
+        </ScrollView>
+      </Animated.View>
+
+      {/* Phrase Display */}
+      <Animated.View 
+        style={[
+          styles.phraseSection,
+          {
+            opacity: fadeAnim,
+            transform: [
+              { 
+                scale: phraseAnim.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [0.95, 1],
+                })
+              }
+            ]
+          }
+        ]}
+      >
+        <LinearGradient
+          colors={[currentTheme.cardBg, 'rgba(255,255,255,0.8)']}
+          style={[styles.phraseContainer, { shadowColor: currentTheme.shadowColor }]}
+        >
+          <View style={styles.phraseHeader}>
+            <MaterialCommunityIcons 
+              name="message-text" 
+              size={20} 
+              color={currentTheme.textColor} 
+            />
+            <Text style={[styles.phraseLabel, { color: currentTheme.textColor }]}>
+              Sua frase:
+            </Text>
+            {phrase.length > 0 && (
+              <View style={[styles.wordCount, { backgroundColor: currentTheme.accent }]}>
+                <Text style={styles.wordCountText}>{phrase.length}</Text>
+              </View>
+            )}
+          </View>
+          
+          <ScrollView 
+            horizontal 
+            showsHorizontalScrollIndicator={false}
+            style={styles.phraseScroll}
+          >
+            <View style={styles.phraseWordsContainer}>
+              {phrase.length > 0 ? (
+                phrase.map((word, index) => (
+                  <View key={`${word}-${index}`} style={[styles.phraseWord, { backgroundColor: currentTheme.secondary }]}>
+                    <Text style={[styles.phraseWordText, { color: currentTheme.textColor }]}>
+                      {word}
+                    </Text>
+                  </View>
+                ))
+              ) : (
+                <Text style={[styles.emptyPhraseText, { color: currentTheme.textColor }]}>
+                  Toque nas palavras para começar... ✨
+                </Text>
+              )}
+            </View>
+          </ScrollView>
+        </LinearGradient>
+      </Animated.View>
+
+      {/* Action Buttons */}
+      <Animated.View 
+        style={[
+          styles.actionsContainer,
+          {
+            opacity: fadeAnim,
+            transform: [{ translateY: slideAnim }]
+          }
+        ]}
+      >
+        <TouchableOpacity
+          style={[
+            styles.actionButton,
+            styles.speakButton,
+            phrase.length === 0 && styles.disabledButton,
+          ]}
+          onPress={handleSpeakPhrase}
+          disabled={phrase.length === 0}
+          activeOpacity={0.8}
+        >
+          <LinearGradient
+            colors={phrase.length > 0 ? ['#4ECDC4', '#44A08D'] : ['#CCCCCC', '#999999']}
+            style={styles.actionButtonGradient}
+          >
+            <MaterialCommunityIcons name="volume-high" size={24} color="#fff" />
+            <Text style={styles.actionButtonText}>Falar</Text>
+          </LinearGradient>
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={styles.deleteButton}
+          style={[
+            styles.actionButton,
+            styles.deleteButton,
+            phrase.length === 0 && styles.disabledButton,
+          ]}
           onPress={handleDeleteLast}
           disabled={phrase.length === 0}
+          activeOpacity={0.8}
         >
-          <Text style={styles.deleteButtonText}>⌫ Apagar Última</Text>
+          <LinearGradient
+            colors={phrase.length > 0 ? ['#FFB74D', '#FF9800'] : ['#CCCCCC', '#999999']}
+            style={styles.actionButtonGradient}
+          >
+            <MaterialCommunityIcons name="backspace" size={24} color="#fff" />
+            <Text style={styles.actionButtonText}>Apagar</Text>
+          </LinearGradient>
         </TouchableOpacity>
-      </View>
+
+        <TouchableOpacity
+          style={[
+            styles.actionButton,
+            styles.clearButton,
+            phrase.length === 0 && styles.disabledButton,
+          ]}
+          onPress={handleClearAll}
+          disabled={phrase.length === 0}
+          activeOpacity={0.8}
+        >
+          <LinearGradient
+            colors={phrase.length > 0 ? ['#FF6B9D', '#E91E63'] : ['#CCCCCC', '#999999']}
+            style={styles.actionButtonGradient}
+          >
+            <MaterialCommunityIcons name="delete-sweep" size={24} color="#fff" />
+            <Text style={styles.actionButtonText}>Limpar</Text>
+          </LinearGradient>
+        </TouchableOpacity>
+      </Animated.View>
     </SafeAreaView>
   );
 }
 
-const screenWidth = Dimensions.get("window").width;
+const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#A1C6F1",
-    paddingHorizontal: 16,
+  },
+  backgroundGradient: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  },
+
+  // Header
+  header: {
+    paddingTop: Platform.OS === 'ios' ? 50 : StatusBar.currentHeight + 20,
+    paddingHorizontal: 20,
+    paddingBottom: 15,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  backButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: 'rgba(255,255,255,0.9)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 15,
+    elevation: 6,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+  },
+  headerContent: {
+    flex: 1,
+    alignItems: 'center',
   },
   title: {
     fontSize: 26,
-    fontWeight: "600",
-    textAlign: "center",
-    color: "#3A3897",
-    marginTop: 30,
-    marginBottom: 10,
-  },
-  categoryWrapper: {
-    height: 50,
-    marginBottom: 10,
-  },
-  categoryScroll: {
-    paddingHorizontal: 5,
-    alignItems: "center",
-  },
-  categoryButton: {
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    backgroundColor: "#ECECFF",
-    borderRadius: 20,
-    marginRight: 10,
-  },
-  activeCategory: {
-    backgroundColor: "#FFD700",
-  },
-  categoryText: {
-    fontSize: 15,
-    color: "#3A3897",
-  },
-  activeCategoryText: {
-    fontWeight: "bold",
-    color: "#fff",
-  },
-  wordsContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "center",
-    paddingBottom: 20,
-  },
-  wordButton: {
-    alignItems: "center",
-    backgroundColor: "#FFF",
-    paddingVertical: 8,
-    paddingHorizontal: 6,
-    margin: 6,
-    borderRadius: 16,
-    width: screenWidth / 4.5, 
-    elevation: 2,
-  },
-  wordImage: {
-    width: 50,
-    height: 50,
-    resizeMode: "contain",
+    fontWeight: 'bold',
+    textAlign: 'center',
     marginBottom: 5,
   },
-  emptyImage: {
-    height: 50,
-    marginBottom: 5,
-  },
-  wordText: {
+  subtitle: {
     fontSize: 14,
-    color: "#3A3897",
-    textAlign: "center",
-  },
-  phraseContainer: {
-    backgroundColor: "#fff",
-    padding: 15,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: "#E0E0FF",
-    minHeight: 60,
-    marginBottom: 20,
-  },
-  phraseLabel: {
-    fontWeight: "600",
-    fontSize: 16,
-    color: "#3A3897",
-    marginBottom: 5,
-  },
-  phraseText: {
-    fontSize: 18,
-    color: "#FF6347",
-  },
-  actionContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 30,
-    paddingHorizontal: 20, 
+    textAlign: 'center',
+    opacity: 0.8,
+    fontWeight: '500',
   },
 
-  playButton: {
-    flex: 1, 
-    backgroundColor: "#6A5ACD",
-    paddingVertical: 14,
-    borderRadius: 20,
-    marginRight: 10, 
-    alignItems: "center",
+  // Categories
+  categoriesContainer: {
+    paddingBottom: 15,
   },
-  playButtonText: {
-    color: "white",
+  categoriesScroll: {
+    paddingHorizontal: 20,
+    gap: 10,
+  },
+  categoryButtonWrapper: {
+    borderRadius: 20,
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  categoryButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 20,
+    gap: 6,
+  },
+  activeCategoryButton: {
+    elevation: 6,
+    shadowOpacity: 0.2,
+  },
+  categoryEmoji: {
     fontSize: 16,
-    fontWeight: "bold",
   },
-  clearButton: {
-    flex: 1,
-    backgroundColor: "#D9534F",
-    paddingVertical: 14,
-    borderRadius: 20,
-    marginLeft: 10,
-    alignItems: "center",
-  },
-  clearButtonText: {
-    color: "white",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  deleteButton: {
-    flex: 1,
-    backgroundColor: "#FFA500",
-    paddingVertical: 14,
-    borderRadius: 20,
-    marginLeft: 10,
-    alignItems: "center",
-  },
-  deleteButtonText: {
-    color: "white",
+  categoryText: {
     fontSize: 14,
-    fontWeight: "bold",
+    fontWeight: '600',
+  },
+  activeCategoryText: {
+    fontWeight: 'bold',
+  },
+
+  // Words
+  wordsSection: {
+    flex: 1,
+    paddingHorizontal: 20,
+  },
+  wordsContainer: {
+    paddingBottom: 20,
+  },
+  wordsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
+  wordCardWrapper: {
+    width: screenWidth / 4 - 20,
+    marginBottom: 15,
+  },
+  wordCard: {
+    borderRadius: 16,
+    elevation: 6,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    overflow: 'hidden',
+  },
+  wordCardGradient: {
+    padding: 12,
+    alignItems: 'center',
+    minHeight: 100,
+    justifyContent: 'space-between',
+  },
+  wordImageContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  wordImage: {
+    width: 45,
+    height: 45,
+    resizeMode: 'contain',
+  },
+  emptyImage: {
+    width: 45,
+    height: 45,
+    borderRadius: 22,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  emptyImageText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  wordText: {
+    fontSize: 12,
+    fontWeight: '600',
+    textAlign: 'center',
+    marginTop: 8,
+  },
+
+  // Phrase
+  phraseSection: {
+    paddingHorizontal: 20,
+    paddingBottom: 15,
+  },
+  phraseContainer: {
+    borderRadius: 20,
+    padding: 16,
+    elevation: 8,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    minHeight: 80,
+  },
+  phraseHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+    gap: 8,
+  },
+  phraseLabel: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    flex: 1,
+  },
+  wordCount: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  wordCountText: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  phraseScroll: {
+    maxHeight: 60,
+  },
+  phraseWordsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  phraseWord: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 15,
+    marginRight: 5,
+    marginBottom: 5,
+  },
+  phraseWordText: {
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  emptyPhraseText: {
+    fontSize: 16,
+    fontStyle: 'italic',
+    opacity: 0.7,
+  },
+
+  // Actions
+  actionsContainer: {
+    flexDirection: 'row',
+    paddingHorizontal: 20,
+    paddingBottom: 30,
+    gap: 10,
+  },
+  actionButton: {
+    flex: 1,
+    borderRadius: 16,
+    elevation: 6,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+  },
+  disabledButton: {
+    elevation: 3,
+    shadowOpacity: 0.1,
+  },
+  actionButtonGradient: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+    borderRadius: 16,
+    gap: 8,
+  },
+  actionButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: 'bold',
   },
 });
