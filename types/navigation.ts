@@ -4,7 +4,7 @@ export type RootStackParamList = {
   ReadingGame: { gender: 'menino' | 'menina' };
   PhraseBuilder: { gender: 'menino' | 'menina' };
   VowelsGame: { gender: 'menino' | 'menina' };
-    WordFormationGame: { gender: 'menino' | 'menina' };
-    AddChildScreen: undefined;
+  WordFormationGame: { gender: 'menino' | 'menina' };
+  AddChildScreen: undefined;
+  ChoiceScreen: undefined; // Add this line to your param list
 };
-
