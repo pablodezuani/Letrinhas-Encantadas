@@ -51,9 +51,8 @@ Tudo foi feito com muito cuidado e com ferramentas modernas para garantir que o 
 
 Se você quiser dar uma espiadinha antes da versão oficial nas lojas, é só seguir esses passinhos mágicos:  
 
-1. 📲 Baixe o aplicativo **Expo Go** na loja do seu celular (App Store ou Google Play)  
-2. 🧑‍💻 Peça ajuda para um técnico ou alguém da área para abrir o app usando o código do projeto  
-3. ✨ Agora é só abrir as portas da imaginação e deixar seu pequeno explorar!  
+1. 🧑‍💻 Peça ajuda para um técnico ou alguém da área para enviar o app ou ipa da aplicação 
+2. ✨ Agora é só abrir as portas da imaginação e deixar seu pequeno explorar!  
 
 ---
 
